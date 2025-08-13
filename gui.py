@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from kArmedBandit import *
 
-# ---- GUI ----
 class BanditGUI:
     def __init__(self, root):
         self.root = root
@@ -23,17 +22,14 @@ class BanditGUI:
         style.configure("TCombobox", font=("Segoe UI", 14))
         style.configure("TCheckbutton", font=("Segoe UI", 14), background="#222", foreground="white")
 
-        # Title
         title_label = ttk.Label(root, text="K-Armed Bandit Simulator", font=("Segoe UI", 20, "bold"), foreground="#00FFAA")
         title_label.grid(row=0, column=0, columnspan=2, pady=15)
 
-        # Algorithm selection
         ttk.Label(root, text="Algorithm:").grid(row=1, column=0, sticky="w", padx=10, pady=5)
         self.alg_var = tk.StringVar(value="EPS_GREEDY")
         algo_box = ttk.Combobox(root, textvariable=self.alg_var, values=["EPS_GREEDY", "UCB", "GradientBandit"], width=20)
         algo_box.grid(row=1, column=1, padx=10, pady=5)
 
-        # Parameters
         self.param_entries = {}
         params = [
             ("n", 10),
@@ -50,25 +46,21 @@ class BanditGUI:
             entry.grid(row=i, column=1, padx=10, pady=5)
             self.param_entries[name] = entry
 
-        # Stationary checkbox
         self.stationary_var = tk.BooleanVar(value=True)
         ttk.Checkbutton(root, text="Stationary Problem", variable=self.stationary_var).grid(
             row=len(params)+2, column=0, columnspan=2, pady=5
         )
 
-        # Superimpose checkbox
         self.superimpose_var = tk.BooleanVar(value=False)
         ttk.Checkbutton(root, text="Superimpose Graphs", variable=self.superimpose_var).grid(
             row=len(params)+3, column=0, columnspan=2, pady=5
         )
 
-        # Run & Clear buttons
         run_btn = ttk.Button(root, text="🚀 Run Simulation", command=self.run_simulation)
         run_btn.grid(row=len(params)+4, column=0, columnspan=2, pady=10)
         clear_btn = ttk.Button(root, text="🧹 Clear Graphs", command=self.clear_graphs)
         clear_btn.grid(row=len(params)+5, column=0, columnspan=2, pady=5)
 
-        # Matplotlib figure
         self.fig, (self.ax_gain, self.ax_counts) = plt.subplots(2, 1, figsize=(10, 8))
         self.fig.patch.set_facecolor("#333")
         self.ax_gain.set_facecolor("#222")
@@ -76,7 +68,6 @@ class BanditGUI:
         self.canvas = FigureCanvasTkAgg(self.fig, master=root)
         self.canvas.get_tk_widget().grid(row=0, column=2, rowspan=len(params)+6, padx=15, pady=15)
 
-        # True rewards display
         self.true_values_text = tk.Text(root, width=25, height=25, font=("Segoe UI", 12), bg="#222", fg="#00FFAA")
         self.true_values_text.grid(row=0, column=3, rowspan=len(params)+6, padx=10, pady=15)
         self.true_values_text.insert(tk.END, "True Bandit Rewards:\n")
@@ -104,7 +95,6 @@ class BanditGUI:
 
         gain, N = bandit.simulate()
 
-        # Plot cumulative gain
         if not superimpose:
             self.ax_gain.clear()
         self.ax_gain.plot(np.arange(iters), gain, linewidth=2, label=f"{alg} (n={n})")
@@ -114,7 +104,6 @@ class BanditGUI:
         self.ax_gain.spines["left"].set_color("white")
         self.ax_gain.legend(facecolor="#222", edgecolor="white", labelcolor="white")
 
-        # Plot action counts
         if not superimpose:
             self.ax_counts.clear()
         self.ax_counts.bar(np.arange(n), N, color="#FFAA00", alpha=0.6, label=f"{alg} (n={n})")
@@ -124,7 +113,6 @@ class BanditGUI:
         self.ax_counts.spines["left"].set_color("white")
         self.ax_counts.legend(facecolor="#222", edgecolor="white", labelcolor="white")
 
-        # Show true rewards
         self.true_values_text.configure(state='normal')
         self.true_values_text.delete(1.0, tk.END)
         self.true_values_text.insert(tk.END, f"True Bandit Rewards ({alg}):\n\n")
